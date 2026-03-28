@@ -1,84 +1,154 @@
-🚀 Automated AWS VPC & EC2 Orchestration Framework
+# 🚀 Automated AWS VPC & EC2 Orchestration Framework
+
 A production-grade, declarative Infrastructure-as-Code (IaC) engine built in Python. This framework programmatically provisions a highly available, two-tier AWS network foundation and deploys an automated web server with IAM-based management and SSM integration.
 
-🏗️ Architecture
-The environment features a Public/Private subnet split across two Availability Zones (AZs) for high availability, utilizing NAT Gateways for secure private egress.
+---
 
-🎯 Objective
-To replace manual "Click-Ops" with a rigorous, idempotent deployment engine. This tool handles the complex lifecycle of networking dependencies, IAM Instance Profiles, and EC2 bootstrapping—adhering to AWS Well-Architected best practices.
+## 🏗️ Architecture
 
-🛠️ Tech Stack
-Language: Python 3.12+
+The environment features a **Public/Private subnet split across two Availability Zones (AZs)** for high availability, utilizing **NAT Gateways** for secure private egress.
 
-SDK: AWS Boto3
+---
 
-Configuration: YAML (Declarative Blueprint)
+## 🎯 Objective
 
-Services: VPC, Multi-AZ Subnets, IGW, NAT Gateways, IAM Roles, EC2, Systems Manager (SSM).
+To replace manual **"Click-Ops"** with a rigorous, idempotent deployment engine.
 
-✨ Key Features
-Centralized Orchestration: A master orchestrator.py manages the dependency flow between networking and compute layers.
+This tool handles:
+- Networking dependencies lifecycle
+- IAM Instance Profiles
+- EC2 bootstrapping  
 
-Idempotency & State Tracking: Uses a state.json tracker to detect existing resources, preventing duplicate billing or resource collisions.
+All while adhering to **AWS Well-Architected best practices**.
 
-IAM-First Security: Replaces hardcoded keys with IAM Roles and Instance Profiles, enabling secure "Keyless" management via AWS Systems Manager (SSM).
+---
 
-Resilient Deployment: Implements Exponential Backoff retries to handle AWS IAM propagation delays during EC2 launches.
+## 🛠️ Tech Stack
 
-Graceful Cleanup: A recursive teardown script ensures expensive resources like NAT Gateways and Elastic IPs are released first to prevent orphaned charges.
+- **Language:** Python 3.12+
+- **SDK:** AWS Boto3
+- **Configuration:** YAML (Declarative Blueprint)
+- **AWS Services:**
+  - VPC
+  - Multi-AZ Subnets
+  - Internet Gateway (IGW)
+  - NAT Gateways
+  - IAM Roles
+  - EC2
+  - AWS Systems Manager (SSM)
 
-📂 Repo Structure
-Plaintext
+---
+
+## ✨ Key Features
+
+### 🔹 Centralized Orchestration
+A master `orchestrator.py` manages dependency flow between networking and compute layers.
+
+### 🔹 Idempotency & State Tracking
+Uses a `state.json` tracker to:
+- Detect existing resources  
+- Prevent duplicate billing  
+- Avoid resource collisions  
+
+### 🔹 IAM-First Security
+- Eliminates hardcoded credentials  
+- Uses IAM Roles & Instance Profiles  
+- Enables **secure keyless access via SSM**
+
+### 🔹 Resilient Deployment
+Implements **Exponential Backoff retries** to handle AWS IAM propagation delays.
+
+### 🔹 Graceful Cleanup
+Recursive teardown ensures:
+- NAT Gateways deleted first  
+- Elastic IPs released  
+- No orphaned billing resources  
+
+## 📂 Repository Structure
+
+```plaintext
 aws-vpc-infrastructure-automation/
-├── config.yaml              (The central declarative blueprint)
-├── config_loader.py         (Utility for parsing YAML and setting IST logging)
-├── orchestrator.py          (The master pipeline controller)
-├── create_infrastructure.py  (The network layer engine)
-├── deploy_ec2.py            (The compute & IAM deployment engine)
-├── remove_infrastructure.py  (The safe teardown/cleanup script)
+├── config.yaml               # Central declarative blueprint
+├── config_loader.py          # YAML parser + IST logging
+├── orchestrator.py           # Master pipeline controller
+├── create_infrastructure.py  # Network layer engine
+├── deploy_ec2.py             # Compute & IAM deployment
+├── remove_infrastructure.py  # Safe teardown script
 ├── docs/
-│   └── screenshots/         (Verified Proof of Work)
-├── .gitignore               (Security filter for state and keys)
+│   └── screenshots/          # Proof of Work
+├── .gitignore                # सुरक्षा filter for state & keys
 └── README.md
-🔐 Required IAM Permissions
-The executing IAM user requires AdministratorAccess or the following "Least Privilege" policy:
 
-JSON
+```
+
+# 🔐 Required IAM Permissions
+
+The executing IAM user should have:
+
+AdministratorAccess
+OR the following least-privilege policy:
+```plaintext
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "ec2:*",
-                "iam:CreateRole",
-                "iam:AttachRolePolicy",
-                "iam:CreateInstanceProfile",
-                "iam:AddRoleToInstanceProfile",
-                "iam:PassRole"
-            ],
-            "Resource": "*"
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:*",
+        "iam:CreateRole",
+        "iam:AttachRolePolicy",
+        "iam:CreateInstanceProfile",
+        "iam:AddRoleToInstanceProfile",
+        "iam:PassRole"
+      ],
+      "Resource": "*"
+    }
+  ]
 }
-🚀 Usage & Proof of Work
-1. Provision Infrastructure
-Run the orchestrator to build the full stack. The script will automatically skip resources that are already created.
+```
 
-Bash
-python3 orchestrator.py up
-VPC Resource Topology:
+## 🚀 Infrastructure Deployment & Verification
 
-2. Access the Application
-The script bootstraps Nginx automatically via User Data. Verify via the Public IP:
+1️⃣ Provision Infrastructure
 
-Live Web Server Verification:
+- Run the orchestrator to build the full stack:
 
-3. IAM & Security Configuration
-Verified IAM Role with SSM Core policies and trust relationships:
+    ```bash
+    python3 orchestrator.py up
+    ```
+- Automatically skips already-created resources
+- Ensures idempotent execution
 
-4. Safe Teardown
-Wipe the environment cleanly to avoid unexpected AWS costs.
+2️⃣ Access the Application
 
-Bash
-python3 orchestrator.py down
+- The framework bootstraps Nginx via EC2 User Data.
+- Retrieve the Public IP
+- Open in browser to verify deployment
+
+3️⃣ IAM & Security Configuration
+
+- IAM Role configured with:
+- SSM Core policies
+- Proper trust relationships
+
+4️⃣ Safe Teardown
+
+- Cleanly destroy all resources to avoid unexpected AWS costs:
+    ```bash
+    python3 orchestrator.py down
+    ```
+- Screenshots available in:
+    - docs/screenshots/
+    - Includes:
+        - VPC topology
+        - EC2 instance status
+        - IAM configuration
+        - Live web server verification
+
+# Final Notes
+
+This project demonstrates:
+
+- Real-world Infrastructure Automation
+- Production-grade AWS architecture design
+- Strong focus on cost control, security, and resilience
