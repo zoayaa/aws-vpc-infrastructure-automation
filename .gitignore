@@ -1,0 +1,12 @@
+# Security: Never push private keys or state
+*.pem
+state.json
+
+# Python: Ignore compiled files and environments
+__pycache__/
+*.pyc
+venv/
+.env
+
+# OS: Ignore system files
+.DS_Store
