@@ -75,8 +75,8 @@ aws-vpc-infrastructure-automation/
 ├── deploy_ec2.py             # Compute & IAM deployment
 ├── remove_infrastructure.py  # Safe teardown script
 ├── docs/
-│   └── screenshots/          # Proof of Work
-├── .gitignore                # सुरक्षा filter for state & keys
+│   └── screenshots/          # work
+├── .gitignore                # safe filter for state & keys
 └── README.md
 
 ```
